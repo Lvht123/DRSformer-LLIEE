@@ -131,12 +131,12 @@ class GELU(nn.Module):
         """
         return F.gelu(x)  # 使用PyTorch的函数实现GELU激活
     
-class CDCM1(nn.Module):
+class CDCM(nn.Module):
     """
     Compact Dilation Convolution based Module
     """
     def __init__(self, in_channels, out_channels):
-        super(CDCM1, self).__init__()
+        super(CDCM, self).__init__()
 
         self.relu1 = nn.ReLU()
         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, padding=0)
@@ -365,22 +365,22 @@ class PiDiNet(nn.Module):
         if self.sa and self.dil is not None:
             self.attentions = nn.ModuleList()
             self.dilations = nn.ModuleList()
-            # for i in range(4):
-            #     self.dilations.append(CDCM(self.fuseplanes[i], self.dil))
-            #     self.attentions.append(CSAM(self.dil))
-            #     self.conv_reduces.append(MapReduce(self.dil))
-            self.dilations.append(CDCM1(self.fuseplanes[0], self.dil))
-            self.attentions.append(CSAM(self.dil))
-            self.conv_reduces.append(MapReduce(self.dil))
-            self.dilations.append(CDCM1(self.fuseplanes[1], self.dil))
-            self.attentions.append(CSAM(self.dil))
-            self.conv_reduces.append(MapReduce(self.dil))
-            self.dilations.append(CDCM2(self.fuseplanes[2], self.dil))
-            self.attentions.append(CSAM(self.dil))
-            self.conv_reduces.append(MapReduce(self.dil))
-            self.dilations.append(CDCM2(self.fuseplanes[3], self.dil))
-            self.attentions.append(CSAM(self.dil))
-            self.conv_reduces.append(MapReduce(self.dil))
+            for i in range(4):
+                self.dilations.append(CDCM(self.fuseplanes[i], self.dil))
+                self.attentions.append(CSAM(self.dil))
+                self.conv_reduces.append(MapReduce(self.dil))
+            # self.dilations.append(CDCM1(self.fuseplanes[0], self.dil))
+            # self.attentions.append(CSAM(self.dil))
+            # self.conv_reduces.append(MapReduce(self.dil))
+            # self.dilations.append(CDCM1(self.fuseplanes[1], self.dil))
+            # self.attentions.append(CSAM(self.dil))
+            # self.conv_reduces.append(MapReduce(self.dil))
+            # self.dilations.append(CDCM2(self.fuseplanes[2], self.dil))
+            # self.attentions.append(CSAM(self.dil))
+            # self.conv_reduces.append(MapReduce(self.dil))
+            # self.dilations.append(CDCM2(self.fuseplanes[3], self.dil))
+            # self.attentions.append(CSAM(self.dil))
+            # self.conv_reduces.append(MapReduce(self.dil))
         elif self.sa:
             self.attentions = nn.ModuleList()
             for i in range(4):
@@ -389,15 +389,7 @@ class PiDiNet(nn.Module):
         elif self.dil is not None:
             self.dilations = nn.ModuleList()
             for i in range(4):
-                # self.dilations.append(CDCM(self.fuseplanes[i], self.dil))
-                # self.conv_reduces.append(MapReduce(self.dil))
-                self.dilations.append(CDCM1(self.fuseplanes[0], self.dil))
-                self.conv_reduces.append(MapReduce(self.dil))
-                self.dilations.append(CDCM1(self.fuseplanes[1], self.dil))
-                self.conv_reduces.append(MapReduce(self.dil))
-                self.dilations.append(CDCM2(self.fuseplanes[2], self.dil))
-                self.conv_reduces.append(MapReduce(self.dil))
-                self.dilations.append(CDCM2(self.fuseplanes[3], self.dil))
+                self.dilations.append(CDCM(self.fuseplanes[i], self.dil))
                 self.conv_reduces.append(MapReduce(self.dil))
         else:
             for i in range(4):

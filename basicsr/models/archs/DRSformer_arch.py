@@ -764,10 +764,10 @@ class DRSformer(nn.Module):
         self.edge_fuse5 = edge_fuse(2,16)
         self.discri = Discriminator(size=128, channel_multiplier=2,
                 narrow=0.5, device='cuda').cuda()
-        # pdcs = config_model(model = "carv4")
-        # self.Pidinet = PiDiNet(60,pdcs,dil=24,sa=True)
-        self.SAG = FullGenerator(128, 32, 8,
-                                 channel_multiplier=2, narrow=0.25, device='cuda').cuda()
+        pdcs = config_model(model = "carv4")
+        self.Pidinet = PiDiNet(60,pdcs,dil=24,sa=True)
+        # self.SAG = FullGenerator(128, 32, 8,
+                                #  channel_multiplier=2, narrow=0.25, device='cuda').cuda()
         # self.SGEM = GlobalGenerator3(6, 3, 16, 1).cuda() ## structure-guided enhancement
         self.patch_embed = OverlapPatchEmbed(inp_channels, dim)
         
@@ -813,13 +813,12 @@ class DRSformer(nn.Module):
         self.refinement = subnet(dim=int(dim*2**1)) ## We do not use MEFC for training Rain200L and SPA-Data
 
         self.output = nn.Conv2d(int(dim * 2 ** 1), out_channels, kernel_size=3, stride=1, padding=1, bias=bias)
-        self.pce = pce()
 
     def forward(self, inp_img):
-        # y_hat_sketch = self.Pidinet(inp_img)
+        y_hat_sketch = self.Pidinet(inp_img)
         # hist , color_feature= self.cnet(inp_img)
-        input_gray = inp_img[:, 0:1, :, :] * 0.299 + inp_img[:, 1:2, :, :] * 0.587 + inp_img[:, 2:3, :, :] * 0.114
-        y_hat_sketch, latent = self.SAG(input_gray, return_latents=True)
+        # input_gray = inp_img[:, 0:1, :, :] * 0.299 + inp_img[:, 1:2, :, :] * 0.587 + inp_img[:, 2:3, :, :] * 0.114
+        # y_hat_sketch, latent = self.SAG(input_gray, return_latents=True)
         inp_enc_level1 = self.patch_embed(inp_img)
         inp_enc_level0 = self.encoder_level0(inp_enc_level1) ## We do not use MEFC for training Rain200L and SPA-Data
         out_enc_level1 = self.encoder_level1(inp_enc_level0)  

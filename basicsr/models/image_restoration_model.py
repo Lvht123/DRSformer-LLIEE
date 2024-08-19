@@ -5,7 +5,7 @@ from collections import OrderedDict
 from copy import deepcopy
 from os import path as osp
 from tqdm import tqdm
-from hrseg.hrseg_model import create_hrnet
+# from hrseg.hrseg_model import create_hrnet
 # from basicsr.models.archs.DRSformer_arch import getsegmap
 from basicsr.models.archs import define_network
 from basicsr.models.base_model import BaseModel
