@@ -46,8 +46,8 @@ datasets:
     ### ------- Training on single fixed-patch size 256x256---------
     mini_batch_sizes: [4]   
     iters: [300000]
-    gt_size: 256
-    gt_sizes: [128]
+    gt_size: 512
+    gt_sizes: [256]
     ### ------------------------------------------------------------
 
     dataset_enlarge_ratio: 1
@@ -71,7 +71,6 @@ network_g:
   type: DRSformer
   inp_channels: 3
   out_channels: 3
-  # middle_channels: 16 #the middle channels of illumination estimator
   dim: 16
   num_blocks: [2,4,4,8]
   heads: [1,2,4,8]
@@ -120,7 +119,7 @@ train:
 # validation settings
 val:
   window_size: 8
-  val_freq: !!float 1e4
+  val_freq: !!float 5e3
   save_img: false
   rgb2bgr: true
   use_image: true
@@ -141,7 +140,7 @@ val:
 # logging settings
 logger:
   print_freq: 200
-  save_checkpoint_freq: !!float 1e4
+  save_checkpoint_freq: !!float 5e3
   use_tb_logger: true
   wandb:
     project: ~

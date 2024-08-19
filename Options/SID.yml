@@ -1,5 +1,5 @@
 # general settings
-name: Enhancement_Retinexformer_SID
+name: SID
 model_type: ImageCleanModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
@@ -34,7 +34,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 8
-    batch_size_per_gpu: 4
+    batch_size_per_gpu: 8
 
     ### -------------Progressive training--------------------------
     # mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
@@ -68,16 +68,18 @@ datasets:
 
 # network structures
 network_g:
-  type: RetinexFormer
-  in_channels: 3
+  type: DRSformer
+  inp_channels: 3
   out_channels: 3
-  n_feat: 40
-  stage: 1
-  num_blocks: [1,2,2]
+  dim: 16
+  num_blocks: [2,4,4,8]
+  heads: [1,2,4,8]
+  ffn_expansion_factor: 2.66
+  bias: False
+  LayerNorm_type: WithBias
 
 
 
-# path
 path:
   pretrain_network_g: ~
   strict_load_g: true
@@ -94,19 +96,19 @@ train:
   # 2nd cycle: cosine annealing (3e-4 to 1e-6) for 208k iters.
   scheduler:
     type: CosineAnnealingRestartCyclicLR
-    periods: [92000, 208000]       
+    periods: [100000, 200000]       
     restart_weights: [1,1]
     eta_mins: [0.0003,0.000001]   
   
   mixing_augs:
-    mixup: true
+    mixup: false
     mixup_beta: 1.2
     use_identity: true
 
   optim_g:
-    type: Adam
-    lr: !!float 2e-4
-    # weight_decay: !!float 1e-4
+    type: AdamW
+    lr: !!float 3e-4
+    weight_decay: !!float 1e-4
     betas: [0.9, 0.999]
   
   # losses
@@ -117,11 +119,11 @@ train:
 
 # validation settings
 val:
-  window_size: 4
-  val_freq: !!float 4e3
+  window_size: 8
+  val_freq: !!float 5e3
   save_img: false
   rgb2bgr: true
-  use_image: false
+  use_image: true
   max_minibatch: 8
 
   metrics:
@@ -129,14 +131,20 @@ val:
       type: calculate_psnr
       crop_border: 0
       test_y_channel: false
+      # better: higher
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+      # better: higher
 
 # logging settings
 logger:
-  print_freq: 1000
-  save_checkpoint_freq: !!float 4e3
+  print_freq: 200
+  save_checkpoint_freq: !!float 5e3
   use_tb_logger: true
   wandb:
-    project: low_light
+    project: ~
     resume_id: ~
 
 # dist training settings

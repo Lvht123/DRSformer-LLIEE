@@ -59,7 +59,7 @@ python3 test_from_dataset.py --opt Options/LOL_v2_real.yml --weights pretrained_
 python3 test_from_dataset.py --opt Options/LOL_v2_real.yml --weights pretrained_models/LOL_v2_real.pth --dataset LOL_v2_real 
 
 # LOL-v2-synthetic
-python3 test_from_dataset.py --opt Options/LOL-v2-synthetic.yml --weights pretrained_models/LOL-v2-synthetic.pth --dataset LOL-v2-synthetic
+python3 test_from_dataset.py --opt Options/LOL_v2_synthetic.yml --weights pretrained_models/LOL_v2_synthetic.pth --dataset LOL_v2_synthetic
 
 # SID
 python3 test_from_dataset.py --opt Options/SID.yml --weights pretrained_models/SID.pth --dataset SID
